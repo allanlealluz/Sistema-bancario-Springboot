@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Entity
 @Data
-public class ContaCorrente extends Conta{
-    private float limite;
-    private float taxa;
+public class ContaCorrente extends Conta {
+    private Double limiteChequeEspecial;
+    private Double taxa;
 }
+
