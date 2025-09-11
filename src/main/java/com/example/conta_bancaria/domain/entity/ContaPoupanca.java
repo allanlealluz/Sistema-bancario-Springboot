@@ -6,4 +6,9 @@ import lombok.Data;
 @Data
 public class ContaPoupanca extends Conta {
     private Double taxaRendimento;
+
+    @Override
+    public void render() {
+        this.setSaldo(this.getSaldo() * (1 + taxaRendimento / 100));
+    }
 }

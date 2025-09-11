@@ -17,7 +17,7 @@ public class ContaService {
         this.clienteRepository = clienteRepository;
     }
 
-    // Criar conta para um cliente
+    // Criar conta
     public ContaDTO criarConta(Long clienteId, String tipo, Double saldoInicial) {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
@@ -36,7 +36,7 @@ public class ContaService {
         }
 
         conta.setSaldo(saldoInicial != null ? saldoInicial : 0.0);
-        conta.setNumero("ACC-" + System.currentTimeMillis()); // número simples de conta
+        conta.setNumero("ACC-" + System.currentTimeMillis());
         conta.setCliente(cliente);
 
         Conta salva = contaRepository.save(conta);
@@ -48,5 +48,47 @@ public class ContaService {
         Conta conta = contaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
         return ContaDTO.fromEntity(conta);
+    }
+
+    // Depósito
+    public void depositar(Long clienteId, String numero, Double valor) {
+        Conta conta = contaRepository.findByClienteIdAndNumero(clienteId, numero)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        conta.depositar(valor);
+        contaRepository.save(conta);
+    }
+
+    // Saque
+    public void sacar(Long clienteId, String numero, Double valor) {
+        Conta conta = contaRepository.findByClienteIdAndNumero(clienteId, numero)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        conta.sacar(valor);
+        contaRepository.save(conta);
+    }
+
+    // Transferência
+    public void transferir(Long origemClienteId, String origemNumero,
+                           Long destinoClienteId, String destinoNumero, Double valor) {
+        Conta origem = contaRepository.findByClienteIdAndNumero(origemClienteId, origemNumero)
+                .orElseThrow(() -> new RuntimeException("Conta origem não encontrada"));
+        Conta destino = contaRepository.findByClienteIdAndNumero(destinoClienteId, destinoNumero)
+                .orElseThrow(() -> new RuntimeException("Conta destino não encontrada"));
+
+        origem.transferir(destino, valor);
+        contaRepository.save(origem);
+        contaRepository.save(destino);
+    }
+
+    // Render (apenas poupança)
+    public void render(Long clienteId, String numero) {
+        Conta conta = contaRepository.findByClienteIdAndNumero(clienteId, numero)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        if (conta instanceof ContaPoupanca cp) {
+            cp.render();
+            contaRepository.save(cp);
+        } else {
+            throw new IllegalArgumentException("Somente contas poupança podem render");
+        }
     }
 }

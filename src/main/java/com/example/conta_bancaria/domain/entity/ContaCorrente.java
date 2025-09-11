@@ -8,5 +8,10 @@ import lombok.Data;
 public class ContaCorrente extends Conta {
     private Double limiteChequeEspecial;
     private Double taxa;
+
+    @Override
+    public void render() {
+        // Conta corrente não rende
+    }
 }
 
