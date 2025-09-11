@@ -1,106 +1,104 @@
-// Elementos do DOM
-const contaSelect = document.getElementById("contaSelect");
-const saldoDisplay = document.getElementById("saldoDisplay");
-const renderBtn = document.getElementById("renderBtn");
+  const clienteId = 1; // troque pelo cliente logado
 
-let contasMap = {}; // armazenar saldo e tipo para cada conta
+  async function carregarContas() {
+      try {
+          const response = await fetch(`http://localhost:8080/Cliente/${clienteId}`);
+          if (!response.ok) throw new Error('Erro ao carregar contas');
 
-// Carregar todas as contas
-async function carregarContas() {
-    try {
-        const res = await fetch("/aluno");
-        const clientes = await res.json();
+          const cliente = await response.json();
+          const select = document.getElementById('contas');
+          select.innerHTML = '';
+          cliente.contas.forEach(conta => {
+              const option = document.createElement('option');
+              option.value = conta.numero;
+              option.text = `${conta.tipo} - ${conta.numero} - Saldo: ${conta.saldo}`;
+              select.appendChild(option);
+          });
+      } catch (err) {
+          document.getElementById('erro').innerText = err.message;
+      }
+  }
 
-        contaSelect.innerHTML = "";
-        contasMap = {};
+  async function depositar() {
+      const numero = document.getElementById('contas').value;
+      const valor = parseFloat(document.getElementById('valor').value);
+      document.getElementById('mensagem').innerText = '';
+      document.getElementById('erro').innerText = '';
 
-        clientes.forEach(c => {
-            c.contas.forEach(ct => {
-                const key = `${c.id}|${ct.numero}`;
-                contasMap[key] = { saldo: ct.saldo, tipo: ct.tipo };
-                const option = document.createElement("option");
-                option.value = key;
-                option.text = `${c.nome} - ${ct.numero} (${ct.tipo})`;
-                contaSelect.add(option);
-            });
-        });
+      try {
+          await fetch('http://localhost:8080/conta/depositar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clienteId, numero, valor })
+          });
+          document.getElementById('mensagem').innerText = 'Depósito realizado com sucesso!';
+          carregarContas(); // atualizar saldo
+      } catch (err) {
+          document.getElementById('erro').innerText = 'Erro ao depositar.';
+      }
+  }
 
-        atualizarSaldo();
-        atualizarRenderButton();
-    } catch (err) {
-        console.error("Erro ao carregar contas:", err);
-    }
-}
+  async function sacar() {
+      const numero = document.getElementById('contas').value;
+      const valor = parseFloat(document.getElementById('valor').value);
+      document.getElementById('mensagem').innerText = '';
+      document.getElementById('erro').innerText = '';
 
-// Atualizar saldo exibido
-function atualizarSaldo() {
-    const key = contaSelect.value;
-    if (!key) return;
-    saldoDisplay.textContent = contasMap[key].saldo.toFixed(2);
-}
+      try {
+          await fetch('http://localhost:8080/conta/sacar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clienteId, numero, valor })
+          });
+          document.getElementById('mensagem').innerText = 'Saque realizado com sucesso!';
+          carregarContas(); // atualizar saldo
+      } catch (err) {
+          document.getElementById('erro').innerText = 'Erro ao sacar.';
+      }
+  }
 
-// Atualizar visibilidade do botão render
-function atualizarRenderButton() {
-    const key = contaSelect.value;
-    renderBtn.style.display = contasMap[key]?.tipo === "ContaPoupanca" ? "inline-block" : "none";
-}
+  async function render() {
+      const numero = document.getElementById('contas').value;
+      document.getElementById('mensagem').innerText = '';
+      document.getElementById('erro').innerText = '';
 
-// Operações bancárias
-async function depositar() {
-    const key = contaSelect.value;
-    const valor = parseFloat(prompt("Valor do depósito:"));
-    if (isNaN(valor) || valor <= 0) return alert("Valor inválido");
+      try {
+          await fetch('http://localhost:8080/conta/render', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ clienteId, numero })
+          });
+          document.getElementById('mensagem').innerText = 'Conta poupanca rendida!';
+          carregarContas(); // atualizar saldo
+      } catch (err) {
+          document.getElementById('erro').innerText = 'Erro ao render.';
+      }
+  }
 
-    const [clienteId, numero] = key.split("|");
+  async function transferir() {
+      const origemNumero = document.getElementById('contas').value;
+      const destinoNumero = document.getElementById('destinoNumero').value;
+      const valor = parseFloat(document.getElementById('valorTransferencia').value);
+      document.getElementById('mensagem').innerText = '';
+      document.getElementById('erro').innerText = '';
 
-    await fetch(`/conta/depositar?clienteId=${clienteId}&numero=${numero}&valor=${valor}`, { method: "POST" });
-    contasMap[key].saldo += valor;
-    atualizarSaldo();
-}
+      try {
+          await fetch('http://localhost:8080/conta/transferir', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  origemClienteId: clienteId,
+                  origemNumero,
+                  destinoClienteId: 2, // trocar conforme destino real
+                  destinoNumero,
+                  valor
+              })
+          });
+          document.getElementById('mensagem').innerText = 'Transferência realizada!';
+          carregarContas(); // atualizar saldo
+      } catch (err) {
+          document.getElementById('erro').innerText = 'Erro ao transferir.';
+      }
+  }
 
-async function sacar() {
-    const key = contaSelect.value;
-    const valor = parseFloat(prompt("Valor do saque:"));
-    if (isNaN(valor) || valor <= 0) return alert("Valor inválido");
-
-    const [clienteId, numero] = key.split("|");
-
-    await fetch(`/conta/sacar?clienteId=${clienteId}&numero=${numero}&valor=${valor}`, { method: "POST" });
-    contasMap[key].saldo -= valor;
-    atualizarSaldo();
-}
-
-async function transferir() {
-    const key = contaSelect.value;
-    const destino = prompt("Número da conta destino (clienteId|numero):");
-    const valor = parseFloat(prompt("Valor da transferência:"));
-    if (!destino || isNaN(valor) || valor <= 0) return alert("Dados inválidos");
-
-    const [clienteId, numero] = key.split("|");
-
-    await fetch(`/conta/transferir?origemClienteId=${clienteId}&origemNumero=${numero}&destinoNumero=${destino}&valor=${valor}`, { method: "POST" });
-
-    contasMap[key].saldo -= valor;
-    if (contasMap[destino]) contasMap[destino].saldo += valor;
-    atualizarSaldo();
-}
-
-async function render() {
-    const key = contaSelect.value;
-    const [clienteId, numero] = key.split("|");
-
-    await fetch(`/conta/render?clienteId=${clienteId}&numero=${numero}`, { method: "POST" });
-
-    // Apenas simulação: aumentar 1% para mostrar visualmente
-    contasMap[key].saldo *= 1.01;
-    atualizarSaldo();
-}
-
-// Atualizar saldo e render quando mudar de conta
-contaSelect.addEventListener("change", () => {
-    atualizarSaldo();
-    atualizarRenderButton();
-});
-
-// Carregar contas ao abrir a página
-carregarContas();
+  window.onload = () => carregarContas();
