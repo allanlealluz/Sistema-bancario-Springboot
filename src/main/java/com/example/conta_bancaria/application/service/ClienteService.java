@@ -2,6 +2,7 @@ package com.example.conta_bancaria.application.service;
 
 import com.example.conta_bancaria.application.dto.ClienteDTO;
 import com.example.conta_bancaria.domain.entity.Cliente;
+import com.example.conta_bancaria.domain.entity.Conta;
 import com.example.conta_bancaria.domain.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,21 @@ public class ClienteService {
 
     // Criar cliente
     public ClienteDTO criarCliente(ClienteDTO dto) {
-        Cliente cliente = dto.toEntity(List.of());
+        // Converte cada ContaDTO para Conta e vincula ao cliente
+        Cliente cliente = new Cliente();
+        cliente.setNome(dto.nome());
+        cliente.setCpf(dto.cpf());
+
+        List<Conta> contas = dto.contas().stream()
+                .map(contaDTO -> {
+                    Conta conta = contaDTO.toEntity();
+                    conta.setCliente(cliente);
+                    return conta;
+                })
+                .collect(Collectors.toList());
+
+        cliente.setContas(contas);
+
         Cliente salvo = clienteRepository.save(cliente);
         return ClienteDTO.fromEntity(salvo);
     }
