@@ -6,6 +6,10 @@ import lombok.Data;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED) // ou SINGLE_TABLE
+//@DiscriminatorColumn(name = "tipo_conta, discriminatorType = DiscriminatorType.STRING, length = 20)
+//@Table(name= "conta",
+// uniqueConraints(name = "uk_conta_numero, columnNames = {"numero"}
+// uniqueConraints(name = "uk_conta_cliente-tipo, columnNames = {"cliente_id","tipo-conta"}
 public abstract class Conta {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
