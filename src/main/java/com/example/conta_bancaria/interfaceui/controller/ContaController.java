@@ -1,9 +1,6 @@
 package com.example.conta_bancaria.interfaceui.controller;
 
-import com.example.conta_bancaria.application.dto.OperacaoRequest;
-import com.example.conta_bancaria.application.dto.TransferenciaRequest;
 import com.example.conta_bancaria.application.service.ContaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
