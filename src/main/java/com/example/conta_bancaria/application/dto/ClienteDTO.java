@@ -27,7 +27,7 @@ public record ClienteDTO(
     }
 
     public Cliente toEntity(List<Conta> contas) {
-        Cliente cliente = new Cliente();
+        Cliente cliente = new Cliente(nome, cpf, conta.toEntity());
         cliente.setNome(this.nome);
         cliente.setCpf(this.cpf);
         cliente.setContas(contas);

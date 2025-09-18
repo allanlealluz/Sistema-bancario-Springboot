@@ -3,7 +3,6 @@ package com.example.conta_bancaria.domain.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 @Entity
 @Data
