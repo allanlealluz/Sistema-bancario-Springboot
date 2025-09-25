@@ -48,6 +48,13 @@ public class ClienteService {
     }
 
     public ClienteResponseDTO atualizarCliente(String cpf, ClienteAtualizadoDTO dto) {
+        var cliente = repository.findByCpfAndAtivoTrue(cpf).orElseThrow(
+                () -> new RuntimeException("Cliente não encontrado.")
+        );
 
+        cliente.setNome(dto.nome());
+        cliente.setCpf(dto.cpf());
+
+        return ClienteResponseDTO.fromEntity(repository.save(cliente));
     }
 }

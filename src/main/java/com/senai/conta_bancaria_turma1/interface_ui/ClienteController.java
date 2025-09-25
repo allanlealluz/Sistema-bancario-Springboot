@@ -39,7 +39,6 @@ public class ClienteController {
     @PutMapping("/{cpf}")
     public ResponseEntity<ClienteResponseDTO> atualizarCliente(@PathVariable String cpf,
                                                                @RequestBody ClienteAtualizadoDTO dto) {
-        ClienteResponseDTO clienteAtualizado = service.atualizarCliente(cpf, dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(service.atualizarCliente(cpf, dto));
     }
 }
