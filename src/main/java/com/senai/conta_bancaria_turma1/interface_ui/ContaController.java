@@ -1,13 +1,12 @@
 package com.senai.conta_bancaria_turma1.interface_ui;
 
+import com.senai.conta_bancaria_turma1.application.dto.ContaAtualizacaoDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ContaResumoDTO;
 import com.senai.conta_bancaria_turma1.application.service.ContaService;
+import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +24,16 @@ public class ContaController {
     @GetMapping("/{numeroDaConta}")
     public ResponseEntity<ContaResumoDTO> buscarContaPorNumero(@PathVariable String numeroDaConta) {
         return ResponseEntity.ok(service.buscarContaPorNumero(numeroDaConta));
+    }
+    @PutMapping("/{numeroDaConta}")
+    public ResponseEntity<ContaResumoDTO> atualizarConta(@PathVariable String numeroDaConta,
+                                                         @RequestBody ContaAtualizacaoDTO dto) {
+       return ResponseEntity.ok(service.atualizarConta(numeroDaConta, dto));
+    }
+
+    @DeleteMapping("/{numeroDaConta}")
+    public ResponseEntity<Void> deletarConta(@PathVariable String numeroDaConta) {
+        service.deletarConta(numeroDaConta);
+        return ResponseEntity.noContent().build();
     }
 }

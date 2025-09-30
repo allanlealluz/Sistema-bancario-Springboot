@@ -1,11 +1,15 @@
 package com.senai.conta_bancaria_turma1.application.service;
 
+import com.senai.conta_bancaria_turma1.application.dto.ContaAtualizacaoDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ContaResumoDTO;
 import com.senai.conta_bancaria_turma1.domain.entity.Conta;
+import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
+import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 
@@ -18,7 +22,6 @@ public class ContaService {
     @Transactional(readOnly = true)
     public List<ContaResumoDTO> listarTodasContas() {
         return repository.findAllByAtivaTrue().stream()
-                .filter(Conta::isAtiva)
                 .map(ContaResumoDTO::fromEntity).toList();
     }
 
@@ -28,5 +31,29 @@ public class ContaService {
                 repository.findByNumeroAndAtivaTrue(numero)
                         .orElseThrow(() -> new RuntimeException("Conta não encontrada"))
         );
+    }
+
+    public ContaResumoDTO atualizarConta(String numeroDaConta, ContaAtualizacaoDTO dto) {
+        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+       if(conta instanceof ContaPoupanca poupanca){
+           poupanca.setRendimento(dto.rendimento());
+       } else if (conta instanceof ContaCorrente corrente) {
+           corrente.setLimite(dto.limite());
+           corrente.setTaxa(dto.taxa());
+       }else {
+              throw new RuntimeException("Tipo de conta inválido");
+       }
+       conta.setSaldo(dto.saldo());
+
+        return ContaResumoDTO.fromEntity(repository.save(conta));
+    }
+
+    public void deletarConta(String numeroDaConta) {
+        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        conta.setAtiva(false);
+        repository.save(conta);
     }
 }
