@@ -2,6 +2,7 @@ package com.senai.conta_bancaria_turma1.application.service;
 
 import com.senai.conta_bancaria_turma1.application.dto.ContaAtualizacaoDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ContaResumoDTO;
+import com.senai.conta_bancaria_turma1.application.dto.TransferenciaDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
@@ -59,10 +60,32 @@ public class ContaService {
     }
 
     public ContaResumoDTO sacar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
-        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
 
         conta.sacar(dto.valor());
         return ContaResumoDTO.fromEntity(repository.save(conta));
+    }
+
+    public ContaResumoDTO depositar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
+
+        conta.depositar(dto.valor());
+        return ContaResumoDTO.fromEntity(repository.save(conta));
+    }
+
+    private Conta buscarContaAtivaPorNumero(String numero) {
+        return repository.findByNumeroAndAtivaTrue(numero)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+    }
+
+    public ContaResumoDTO transferir(String numeroDaConta, TransferenciaDTO dto) {
+        Conta contaOrigem = buscarContaAtivaPorNumero(numeroDaConta);
+        Conta contaDestino = buscarContaAtivaPorNumero(dto.contaDestino());
+
+        contaOrigem.sacar(dto.valor());
+        contaDestino.depositar(dto.valor());
+
+        repository.save(contaDestino);
+        return ContaResumoDTO.fromEntity(repository.save(contaOrigem));
     }
 }

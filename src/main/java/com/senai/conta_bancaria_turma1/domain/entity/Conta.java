@@ -41,12 +41,21 @@ public abstract class Conta {
     public abstract String getTipo() ;
 
     public void sacar(BigDecimal valor) {
-        if(valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("O valor de saque deve ser positivo.");
-        }
+        validarValorMaiorQueZero(valor);
         if (valor.compareTo(saldo) > 0) {
             throw new IllegalArgumentException("Saldo insuficiente para saque.");
         }
         saldo = saldo.subtract(valor);
+    }
+
+    public void depositar(BigDecimal valor) {
+        validarValorMaiorQueZero(valor);
+        saldo = saldo.add(valor);
+    }
+
+    private static void validarValorMaiorQueZero(BigDecimal valor) {
+        if(valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("O valor de saque deve ser positivo.");
+        }
     }
 }
