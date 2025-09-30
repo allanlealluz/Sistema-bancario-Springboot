@@ -2,6 +2,7 @@ package com.senai.conta_bancaria_turma1.application.service;
 
 import com.senai.conta_bancaria_turma1.application.dto.ContaAtualizacaoDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ContaResumoDTO;
+import com.senai.conta_bancaria_turma1.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
@@ -55,5 +56,13 @@ public class ContaService {
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
         conta.setAtiva(false);
         repository.save(conta);
+    }
+
+    public ContaResumoDTO sacar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
+        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+
+        conta.sacar(dto.valor());
+        return ContaResumoDTO.fromEntity(repository.save(conta));
     }
 }
