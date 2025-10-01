@@ -73,11 +73,6 @@ public class ContaService {
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
 
-    private Conta buscarContaAtivaPorNumero(String numero) {
-        return repository.findByNumeroAndAtivaTrue(numero)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
-    }
-
     public ContaResumoDTO transferir(String numeroDaConta, TransferenciaDTO dto) {
         Conta contaOrigem = buscarContaAtivaPorNumero(numeroDaConta);
         Conta contaDestino = buscarContaAtivaPorNumero(dto.contaDestino());
@@ -87,5 +82,9 @@ public class ContaService {
 
         repository.save(contaDestino);
         return ContaResumoDTO.fromEntity(repository.save(contaOrigem));
+    }
+    private Conta buscarContaAtivaPorNumero(String numero) {
+        return repository.findByNumeroAndAtivaTrue(numero)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
     }
 }
