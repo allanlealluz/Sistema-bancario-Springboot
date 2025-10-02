@@ -28,7 +28,7 @@ public abstract class Conta {
     @Column(nullable = false, length = 20)
     private String numero;
 
-    @Column(nullable = false, precision = 4)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal saldo;
 
     @Column(nullable = false)
