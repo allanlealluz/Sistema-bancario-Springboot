@@ -77,8 +77,7 @@ public class ContaService {
         Conta contaOrigem = buscarContaAtivaPorNumero(numeroDaConta);
         Conta contaDestino = buscarContaAtivaPorNumero(dto.contaDestino());
 
-        contaOrigem.sacar(dto.valor());
-        contaDestino.depositar(dto.valor());
+        contaOrigem.transferir(dto.valor(), contaDestino);
 
         repository.save(contaDestino);
         return ContaResumoDTO.fromEntity(repository.save(contaOrigem));
