@@ -27,10 +27,11 @@ public class ContaController {
     public ResponseEntity<ContaResumoDTO> buscarContaPorNumero(@PathVariable String numeroDaConta) {
         return ResponseEntity.ok(service.buscarContaPorNumero(numeroDaConta));
     }
+
     @PutMapping("/{numeroDaConta}")
     public ResponseEntity<ContaResumoDTO> atualizarConta(@PathVariable String numeroDaConta,
                                                          @RequestBody ContaAtualizacaoDTO dto) {
-       return ResponseEntity.ok(service.atualizarConta(numeroDaConta, dto));
+        return ResponseEntity.ok(service.atualizarConta(numeroDaConta, dto));
     }
 
     @DeleteMapping("/{numeroDaConta}")
@@ -47,7 +48,7 @@ public class ContaController {
 
     @PostMapping("/{numeroDaConta}/depositar")
     public ResponseEntity<ContaResumoDTO> depositar(@PathVariable String numeroDaConta,
-                                                   @RequestBody ValorSaqueDepositoDTO dto) {
+                                                    @RequestBody ValorSaqueDepositoDTO dto) {
         return ResponseEntity.ok(service.depositar(numeroDaConta, dto));
     }
 
@@ -56,4 +57,10 @@ public class ContaController {
                                                      @RequestBody TransferenciaDTO dto) {
         return ResponseEntity.ok(service.transferir(numeroDaConta, dto));
     }
+
+    @PostMapping("/{numeroDaConta}/rendimento")
+    public ResponseEntity<ContaResumoDTO> aplicarRendimento(@PathVariable String numeroDaConta) {
+        return ResponseEntity.ok(service.aplicarRendimento(numeroDaConta));
+    }
+
 }

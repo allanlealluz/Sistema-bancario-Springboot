@@ -8,6 +8,7 @@ import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
 import com.senai.conta_bancaria_turma1.domain.exception.EntidadeNaoEncontradaException;
+import com.senai.conta_bancaria_turma1.domain.exception.RendimentoInvalidoException;
 import com.senai.conta_bancaria_turma1.domain.exception.TipoDeContaInvalidaException;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,15 +40,15 @@ public class ContaService {
     public ContaResumoDTO atualizarConta(String numeroDaConta, ContaAtualizacaoDTO dto) {
         Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
 
-       if(conta instanceof ContaPoupanca poupanca){
-           poupanca.setRendimento(dto.rendimento());
-       } else if (conta instanceof ContaCorrente corrente) {
-           corrente.setLimite(dto.limite());
-           corrente.setTaxa(dto.taxa());
-       }else {
-              throw new TipoDeContaInvalidaException("");
-       }
-       conta.setSaldo(dto.saldo());
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.setRendimento(dto.rendimento());
+        } else if (conta instanceof ContaCorrente corrente) {
+            corrente.setLimite(dto.limite());
+            corrente.setTaxa(dto.taxa());
+        } else {
+            throw new TipoDeContaInvalidaException("");
+        }
+        conta.setSaldo(dto.saldo());
 
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
@@ -81,8 +82,18 @@ public class ContaService {
         repository.save(contaDestino);
         return ContaResumoDTO.fromEntity(repository.save(contaOrigem));
     }
+
     private Conta buscarContaAtivaPorNumero(String numero) {
         return repository.findByNumeroAndAtivaTrue(numero)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("conta"));
+    }
+
+    public ContaResumoDTO aplicarRendimento(String numeroDaConta) {
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.aplicarRendimento();
+            return ContaResumoDTO.fromEntity(repository.save(poupanca));
+        }
+        throw new RendimentoInvalidoException();
     }
 }
