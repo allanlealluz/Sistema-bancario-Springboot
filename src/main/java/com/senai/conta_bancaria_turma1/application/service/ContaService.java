@@ -8,6 +8,7 @@ import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
+import com.senai.conta_bancaria_turma1.exception.TipoDeContaInvalidaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,5 +86,16 @@ public class ContaService {
     private Conta buscarContaAtivaPorNumero(String numero) {
         return repository.findByNumeroAndAtivaTrue(numero)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+    }
+    public ContaResumoDTO aplicarRendimento(String numeroDaConta) {
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
+        if(conta instanceof ContaPoupanca poupanca) {
+            poupanca.aplicarRendimento();
+            return ContaResumoDTO.fromEntity(repository.save(conta));
+        }
+            throw new RuntimeException("erro");
+
+
+
     }
 }
