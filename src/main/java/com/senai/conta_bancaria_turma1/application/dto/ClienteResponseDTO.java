@@ -3,6 +3,7 @@ package com.senai.conta_bancaria_turma1.application.dto;
 import com.senai.conta_bancaria_turma1.domain.entity.Cliente;
 
 import java.util.List;
+import java.util.Optional;
 
 public record ClienteResponseDTO(
         String id,

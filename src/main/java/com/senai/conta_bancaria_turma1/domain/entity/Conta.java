@@ -1,5 +1,6 @@
 package com.senai.conta_bancaria_turma1.domain.entity;
 
+import com.senai.conta_bancaria_turma1.exception.saldoInsuficienteException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,7 +44,7 @@ public abstract class Conta {
     public void sacar(BigDecimal valor) {
         validarValorMaiorQueZero(valor);
         if (valor.compareTo(saldo) > 0) {
-            throw new IllegalArgumentException("Saldo insuficiente para saque.");
+            throw new saldoInsuficienteException("saque");
         }
         saldo = saldo.subtract(valor);
     }

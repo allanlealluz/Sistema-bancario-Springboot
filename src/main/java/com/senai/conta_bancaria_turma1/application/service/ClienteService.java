@@ -4,6 +4,7 @@ import com.senai.conta_bancaria_turma1.application.dto.ClienteAtualizadoDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ClienteRegistroDTO;
 import com.senai.conta_bancaria_turma1.application.dto.ClienteResponseDTO;
 import com.senai.conta_bancaria_turma1.domain.repository.ClienteRepository;
+import com.senai.conta_bancaria_turma1.exception.EntidadeNaoEncontradaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class ClienteService {
 
     public ClienteResponseDTO buscarClienteAtivoPorCpf(String cpf) {
         var cliente = repository.findByCpfAndAtivoTrue(cpf).orElseThrow(
-                () -> new RuntimeException("Cliente não encontrado.")
+                () -> new EntidadeNaoEncontradaException(cpf)
         );
         return ClienteResponseDTO.fromEntity(cliente);
     }
