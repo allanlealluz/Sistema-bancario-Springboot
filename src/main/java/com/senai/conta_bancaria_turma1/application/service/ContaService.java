@@ -7,6 +7,7 @@ import com.senai.conta_bancaria_turma1.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
+import com.senai.conta_bancaria_turma1.domain.exception.TipoDeContaInvalidaException;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class ContaService {
            corrente.setLimite(dto.limite());
            corrente.setTaxa(dto.taxa());
        }else {
-              throw new RuntimeException("Tipo de conta inválido");
+              throw new TipoDeContaInvalidaException("");
        }
        conta.setSaldo(dto.saldo());
 
