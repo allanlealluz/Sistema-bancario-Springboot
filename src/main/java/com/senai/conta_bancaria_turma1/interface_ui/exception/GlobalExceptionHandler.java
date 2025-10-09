@@ -21,20 +21,41 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+
     @ExceptionHandler(ContaMesmoTipoException.class)
-    public ResponseEntity<String> handleContaMesmoTipoException(ContaMesmoTipoException e){
-            return new ResponseEntity<>("Não é possível realizar operações com contas do mesmo tipo", HttpStatus.BAD_REQUEST);
+    public ProblemDetail handleContaMesmoTipoException(ContaMesmoTipoException e, HttpServletRequest request){
+         return ProblemDetailUtils.buildProblem(
+                 HttpStatus.BAD_REQUEST,
+                 "Não é possível criar uma conta do mesmo tipo.",
+                 e.getMessage(),
+                 request.getRequestURI());
         }
         @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<String> handleContaInexistenteException(EntidadeNaoEncontradaException e){
-            return new ResponseEntity<>("entidade não encontrada", HttpStatus.NOT_FOUND);
+    public ProblemDetail handleContaInexistenteException(EntidadeNaoEncontradaException e, HttpServletRequest request){
+         return ProblemDetailUtils.buildProblem(
+                 HttpStatus.NOT_FOUND,
+                 "Conta não encontrada.",
+                 e.getMessage(),
+                 request.getRequestURI());
         }
         @ExceptionHandler(RendimentoException.class)
-    public ResponseEntity<String> handleRendimentoException(RendimentoException e) {
-            return new ResponseEntity<>("Não é possível realizar operações com valores negativos", HttpStatus.BAD_REQUEST);
+    public ProblemDetail handleRendimentoException(RendimentoException e, HttpServletRequest request) {
+            return ProblemDetailUtils.buildProblem(
+                    HttpStatus.BAD_REQUEST,
+                    "Rendimento não pode ser menor que 0.",
+                    e.getMessage(),
+                    request.getRequestURI());
         }
         @ExceptionHandler(saldoInsuficienteException.class)
-    public ResponseEntity<String> handleValorInvalidoException(saldoInsuficienteException e) {
-            return new ResponseEntity<>("Saldo insuficiente", HttpStatus.BAD_REQUEST);
+    public ProblemDetail handleValorInvalidoException(saldoInsuficienteException e, HttpServletRequest request) {
+            return ProblemDetailUtils.buildProblem(
+                    HttpStatus.BAD_REQUEST,
+                    "Valor inválido",
+                    e.getMessage(),
+                    request.getRequestURI());
+        }
+        @ExceptionHandler(TransferirParaMesmaContaException.class)
+    public ProblemDetail handleTransferirParaMesmaContaException(TransferirParaMesmaContaException e, HttpServletRequest request){
+            return ProblemDetailUtils.buildProblem(HttpStatus.BAD_REQUEST,"erro",e.getMessage(), request.getRequestURI() );
         }
 }
