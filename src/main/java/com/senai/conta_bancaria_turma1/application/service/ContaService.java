@@ -8,11 +8,9 @@ import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
-import com.senai.conta_bancaria_turma1.exception.TipoDeContaInvalidaException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 

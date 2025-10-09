@@ -1,6 +1,6 @@
 package com.senai.conta_bancaria_turma1.domain.entity;
 
-import com.senai.conta_bancaria_turma1.exception.saldoInsuficienteException;
+import com.senai.conta_bancaria_turma1.domain.exception.saldoInsuficienteException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
