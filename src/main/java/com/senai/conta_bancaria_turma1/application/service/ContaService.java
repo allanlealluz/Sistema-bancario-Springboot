@@ -60,7 +60,6 @@ public class ContaService {
 
     public ContaResumoDTO sacar(String numeroDaConta, ValorSaqueDepositoDTO dto) {
         Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
-
         conta.sacar(dto.valor());
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
