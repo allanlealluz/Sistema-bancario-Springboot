@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record ValorSaqueDepositoDTO(
-        @NotNull
+        @NotNull(message="o valor é obrigatório")
         BigDecimal valor
 ) {
 }
