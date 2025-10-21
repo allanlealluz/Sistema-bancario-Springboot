@@ -45,4 +45,3 @@ public record ClienteResponseDto(
                 contas
         );
     }
-}

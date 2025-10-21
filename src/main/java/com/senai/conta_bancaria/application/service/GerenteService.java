@@ -80,4 +80,3 @@ public class GerenteService {
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("gerente"));
     }
-}
