@@ -7,6 +7,9 @@ import com.senai.conta_bancaria_turma1.application.dto.ValorSaqueDepositoDTO;
 import com.senai.conta_bancaria_turma1.domain.entity.Conta;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaCorrente;
 import com.senai.conta_bancaria_turma1.domain.entity.ContaPoupanca;
+import com.senai.conta_bancaria_turma1.domain.exception.EntidadeNaoEncontradaException;
+import com.senai.conta_bancaria_turma1.domain.exception.RendimentoInvalidoException;
+import com.senai.conta_bancaria_turma1.domain.exception.TipoDeContaInvalidaException;
 import com.senai.conta_bancaria_turma1.domain.repository.ContaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,31 +32,28 @@ public class ContaService {
     @Transactional(readOnly = true)
     public ContaResumoDTO buscarContaPorNumero(String numero) {
         return ContaResumoDTO.fromEntity(
-                repository.findByNumeroAndAtivaTrue(numero)
-                        .orElseThrow(() -> new RuntimeException("Conta não encontrada"))
+                buscarContaAtivaPorNumero(numero)
         );
     }
 
     public ContaResumoDTO atualizarConta(String numeroDaConta, ContaAtualizacaoDTO dto) {
-        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
 
-       if(conta instanceof ContaPoupanca poupanca){
-           poupanca.setRendimento(dto.rendimento());
-       } else if (conta instanceof ContaCorrente corrente) {
-           corrente.setLimite(dto.limite());
-           corrente.setTaxa(dto.taxa());
-       }else {
-              throw new RuntimeException("Tipo de conta inválido");
-       }
-       conta.setSaldo(dto.saldo());
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.setRendimento(dto.rendimento());
+        } else if (conta instanceof ContaCorrente corrente) {
+            corrente.setLimite(dto.limite());
+            corrente.setTaxa(dto.taxa());
+        } else {
+            throw new TipoDeContaInvalidaException("");
+        }
+        conta.setSaldo(dto.saldo());
 
         return ContaResumoDTO.fromEntity(repository.save(conta));
     }
 
     public void deletarConta(String numeroDaConta) {
-        Conta conta = repository.findByNumeroAndAtivaTrue(numeroDaConta)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
         conta.setAtiva(false);
         repository.save(conta);
     }
@@ -80,9 +80,19 @@ public class ContaService {
         repository.save(contaDestino);
         return ContaResumoDTO.fromEntity(repository.save(contaOrigem));
     }
+
     private Conta buscarContaAtivaPorNumero(String numero) {
         return repository.findByNumeroAndAtivaTrue(numero)
-                .orElseThrow(() -> new RuntimeException("Conta não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("conta"));
+    }
+
+    public ContaResumoDTO aplicarRendimento(String numeroDaConta) {
+        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.aplicarRendimento();
+            return ContaResumoDTO.fromEntity(repository.save(poupanca));
+        }
+        throw new RendimentoInvalidoException();
     }
     public ContaResumoDTO aplicarRendimento(String numeroDaConta) {
         Conta conta = buscarContaAtivaPorNumero(numeroDaConta);

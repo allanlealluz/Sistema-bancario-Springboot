@@ -32,9 +32,8 @@ public record ContaResumoDTO(
                     .rendimento(new BigDecimal("0.01"))
                     .ativa(true)
                     .build();
-        }else{
-            throw new TipoDeContaInvalidaException(tipo);
         }
+        throw new TipoDeContaInvalidaException(tipo);
     }
 
     public static ContaResumoDTO fromEntity(Conta conta) {
