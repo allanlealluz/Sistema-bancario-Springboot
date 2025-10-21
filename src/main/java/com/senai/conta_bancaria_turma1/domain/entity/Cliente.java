@@ -32,4 +32,5 @@ public  class Cliente {
 
     @Column(nullable = false)
     private Boolean ativo;
+
 }

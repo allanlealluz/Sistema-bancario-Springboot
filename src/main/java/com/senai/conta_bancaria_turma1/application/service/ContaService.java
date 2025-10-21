@@ -94,15 +94,4 @@ public class ContaService {
         }
         throw new RendimentoInvalidoException();
     }
-    public ContaResumoDTO aplicarRendimento(String numeroDaConta) {
-        Conta conta = buscarContaAtivaPorNumero(numeroDaConta);
-        if(conta instanceof ContaPoupanca poupanca) {
-            poupanca.aplicarRendimento();
-            return ContaResumoDTO.fromEntity(repository.save(conta));
-        }
-            throw new RuntimeException("erro");
-
-
-
-    }
 }

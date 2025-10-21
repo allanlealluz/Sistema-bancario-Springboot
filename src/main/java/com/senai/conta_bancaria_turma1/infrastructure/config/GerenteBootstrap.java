@@ -1,8 +1,8 @@
 package com.senai.conta_bancaria_turma1.infrastructure.config;
 
-import com.senai.modelo_autenticacao_autorizacao.domain.entity.Professor;
-import com.senai.modelo_autenticacao_autorizacao.domain.enums.Role;
-import com.senai.modelo_autenticacao_autorizacao.domain.repository.ProfessorRepository;
+import com.senai.conta_bancaria_turma1.domain.entity.Gerente;
+import com.senai.conta_bancaria_turma1.domain.enums.Role;
+import com.senai.conta_bancaria_turma1.domain.repository.GerenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AdminBootstrap implements CommandLineRunner {
+public class GerenteBootstrap implements CommandLineRunner {
 
-    private final ProfessorRepository professorRepository;
+    private final GerenteRepository gerenteRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${sistema.admin.email}")
@@ -24,22 +24,22 @@ public class AdminBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        professorRepository.findByEmail(adminEmail).ifPresentOrElse(
-                prof -> {
-                    if (!prof.isAtivo()) {
-                        prof.setAtivo(true);
-                        professorRepository.save(prof);
+        gerenteRepository.findByEmail(adminEmail).ifPresentOrElse(
+                gerente -> {
+                    if (!gerente.isAtivo()) {
+                        gerente.setAtivo(true);
+                        gerenteRepository.save(gerente);
                     }
                 },
                 () -> {
-                    Professor admin = Professor.builder()
+                    Gerente admin = Gerente.builder()
                             .nome("Administrador Provisório")
                             .email(adminEmail)
                             .cpf("000.000.000-00")
                             .senha(passwordEncoder.encode(adminSenha))
-                            .role(Role.ADMIN)
+                            .role(Role.GERENTE)
                             .build();
-                    professorRepository.save(admin);
+                    gerenteRepository.save(admin);
                     System.out.println("⚡ Usuário admin provisório criado: " + adminEmail);
                 }
         );
