@@ -82,8 +82,8 @@ public class ContaController {
     }
 
     @PostMapping("/{numero}/rendimento")
-    public ResponseEntity<ContaResumoDto> aplicarRendimento(@PathVariable Long numero) {
+    public ResponseEntity<ContaResumoDto> rendimento(@PathVariable Long numero) {
         return ResponseEntity
-                .ok(service.aplicarRendimento(numero));
+                .ok(service.rendimento(numero));
     }
 }

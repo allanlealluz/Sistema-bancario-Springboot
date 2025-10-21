@@ -92,7 +92,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
     public ProblemDetail handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException ex,
-                                                              HttpServletRequest request) {
+                                                     HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.NOT_FOUND,
                 "Entidade não encontrada.",
@@ -133,7 +133,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TransferenciaParaMesmaContaException.class)
     public ProblemDetail handleTransferenciaParaMesmaConta(TransferenciaParaMesmaContaException ex,
-                                                                    HttpServletRequest request) {
+                                                           HttpServletRequest request) {
         return ProblemDetailUtils.buildProblem(
                 HttpStatus.CONFLICT,
                 "Transferência para mesma conta não é permitida.",

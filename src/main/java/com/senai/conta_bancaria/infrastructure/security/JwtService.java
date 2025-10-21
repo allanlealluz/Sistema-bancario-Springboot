@@ -13,7 +13,6 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-
     private final Key key;
     private final long expirationSeconds;
 
@@ -52,6 +51,7 @@ public class JwtService {
                 .getBody()
                 .get("role");
     }
+
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
@@ -66,5 +66,4 @@ public class JwtService {
                 .getExpiration();
         return expiration.before(new Date());
     }
-
 }

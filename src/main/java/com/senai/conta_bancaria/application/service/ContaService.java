@@ -11,24 +11,24 @@ import com.senai.conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.conta_bancaria.domain.exception.RendimentoInvalidoException;
 import com.senai.conta_bancaria.domain.exception.TipoDeContaInvalidaException;
 import com.senai.conta_bancaria.domain.repository.ContaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class ContaService {
     private final ContaRepository repository;
-
-    public ContaService(ContaRepository repository) {
-        this.repository = repository;
-    }
 
     // CREATE: embutido em Cliente
 
     // READ
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('CLIENTE')")
     public List<ContaResumoDto> listarTodasAsContas() {
         return repository
                 .findAllByAtivoTrue()
@@ -38,6 +38,7 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('CLIENTE')")
     public List<ContaResumoDto> listarContasPorCpf(Long cpf) {
         return repository
                 .findAllByAtivoTrue()
@@ -48,11 +49,13 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto buscarConta(Long numero) {
         return ContaResumoDto.fromEntity(procurarContaAtiva(numero));
     }
 
     // UPDATE
+    @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto atualizarConta(Long numero, ContaAtualizacaoDto dto) {
         Conta conta = procurarContaAtiva(numero);
 
@@ -70,6 +73,7 @@ public class ContaService {
     }
 
     // DELETE
+    @PreAuthorize("hasRole('CLIENTE')")
     public void apagarConta(Long numero) {
         Conta conta = procurarContaAtiva(numero);
 
@@ -80,6 +84,7 @@ public class ContaService {
 
     // Ações específicas
 
+    @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto sacar(Long numero, ValorSaqueDepositoDto dto) {
         Conta conta = procurarContaAtiva(numero);
 
@@ -88,6 +93,7 @@ public class ContaService {
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
+    @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto depositar(Long numero, ValorSaqueDepositoDto dto) {
         Conta conta = procurarContaAtiva(numero);
 
@@ -96,6 +102,7 @@ public class ContaService {
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
+    @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto transferir(Long numeroOrigem, TransferenciaDto dto) {
         Conta contaOrigem = procurarContaAtiva(numeroOrigem);
         Conta contaDestino = procurarContaAtiva(dto.numeroDestino());
@@ -106,7 +113,8 @@ public class ContaService {
         return ContaResumoDto.fromEntity(repository.save(contaOrigem));
     }
 
-    public ContaResumoDto aplicarRendimento(Long numero) {
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ContaResumoDto rendimento(Long numero) {
         Conta conta = procurarContaAtiva(numero);
 
         if (!(conta instanceof ContaPoupanca contaPoupanca))

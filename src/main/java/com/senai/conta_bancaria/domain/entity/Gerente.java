@@ -1,7 +1,6 @@
 package com.senai.conta_bancaria.domain.entity;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,5 +12,4 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Entity
 public class Gerente extends Usuario {
-
 }
