@@ -12,3 +12,4 @@ public interface ContaRepository extends JpaRepository<Conta, String> {
     Optional<Conta> findByNumeroAndAtivoTrue(Long cpf);
 
     List<Conta> findAllByAtivoTrue();
+}
