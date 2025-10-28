@@ -23,29 +23,31 @@ public class ClienteService {
     private final ClienteRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    // CREATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public ClienteResponseDto registrarCliente(ClienteRegistroDto dto) {
-        Cliente clienteRegistrado = repository // verifica se o cliente já existe
+
+        // 1. Tenta encontrar o cliente
+        Cliente cliente = repository
                 .findByCpfAndAtivoTrue(dto.cpf())
-                .orElseGet( // se não existir, cria um novo
-                        () -> repository.save(dto.toEntity())
-                );
-        List<Conta> contas = clienteRegistrado.getContas();
-        Conta novaConta = dto.conta().toEntity(clienteRegistrado);
+                .orElse(null); // Use orElse(null) para podermos verificar
 
-        boolean temMesmoTipo = contas // verifica se o cliente já tem uma conta do mesmo tipo
-                .stream()
-                .anyMatch(c -> c.getTipo().equals(novaConta.getTipo()) && c.isAtivo());
-        if (temMesmoTipo)
-            throw new ContaDeMesmoTipoException(novaConta.getTipo());
+        Conta novaConta;
 
-        clienteRegistrado.getContas().add(novaConta);
-        clienteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
-        return ClienteResponseDto.fromEntity(repository.save(clienteRegistrado));
+        if (cliente == null) {
+            cliente = dto.toEntity();
+            cliente.setSenha(passwordEncoder.encode(dto.senha()));
+            novaConta = dto.conta().toEntity(cliente);
+            cliente.setContas(List.of(novaConta));
+        } else {
+            novaConta = dto.conta().toEntity(cliente);
+            boolean temMesmoTipo = cliente.getContas().stream()
+                    .anyMatch(c -> c.getTipo().equals(novaConta.getTipo()) && c.isAtivo());
+            if (temMesmoTipo)
+                throw new ContaDeMesmoTipoException(novaConta.getTipo());
+            cliente.getContas().add(novaConta);
+        }
+        return ClienteResponseDto.fromEntity(repository.save(cliente));
     }
-
-    // READ
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
     public List<ClienteResponseDto> listarTodosOsClientes() {

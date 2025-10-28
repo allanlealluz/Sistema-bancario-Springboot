@@ -4,6 +4,7 @@ import com.senai.conta_bancaria.application.dto.GerenteAtualizacaoDto;
 import com.senai.conta_bancaria.application.dto.GerenteRegistroDto;
 import com.senai.conta_bancaria.application.dto.GerenteResponseDto;
 import com.senai.conta_bancaria.domain.entity.Gerente;
+import com.senai.conta_bancaria.domain.exception.EntidadeJaExisteException; // Crie esta exceção
 import com.senai.conta_bancaria.domain.exception.EntidadeNaoEncontradaException;
 import com.senai.conta_bancaria.domain.repository.GerenteRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,19 @@ public class GerenteService {
     // CREATE
     @PreAuthorize("hasRole('ADMIN')")
     public GerenteResponseDto registrarGerente(GerenteRegistroDto dto) {
-        Gerente gerenteRegistrado = repository // verifica se o gerente já existe
-                .findByCpfAndAtivoTrue(dto.cpf())
-                .orElseGet( // se não existir, cria um novo
-                        () -> repository.save(dto.toEntity())
-                );
+        // 1. Verifica se o gerente já existe
+        repository.findByCpfAndAtivoTrue(dto.cpf()).ifPresent(g -> {
+            throw new EntidadeJaExisteException("Gerente com este CPF já cadastrado.");
+        });
 
-        gerenteRegistrado.setSenha(passwordEncoder.encode(dto.senha()));
-        return GerenteResponseDto.fromEntity(repository.save(gerenteRegistrado));
+        // 2. Cria a entidade
+        Gerente gerente = dto.toEntity();
+
+        // 3. CRIPTOGRAFA a senha ANTES de salvar
+        gerente.setSenha(passwordEncoder.encode(dto.senha()));
+
+        // 4. Salva (apenas um save)
+        return GerenteResponseDto.fromEntity(repository.save(gerente));
     }
 
     // READ
@@ -59,7 +65,13 @@ public class GerenteService {
         gerente.setNome(dto.nome());
         gerente.setCpf(dto.cpf());
         gerente.setEmail(dto.email());
-        gerente.setSenha(dto.senha());
+
+        // 🔐 CORREÇÃO DE SEGURANÇA:
+        // Verifica se uma nova senha foi fornecida antes de criptografar
+        if (dto.senha() != null && !dto.senha().isBlank()) {
+            gerente.setSenha(passwordEncoder.encode(dto.senha()));
+        }
+        // Se a senha no DTO for nula ou vazia, a senha antiga é mantida.
 
         return GerenteResponseDto.fromEntity(repository.save(gerente));
     }
