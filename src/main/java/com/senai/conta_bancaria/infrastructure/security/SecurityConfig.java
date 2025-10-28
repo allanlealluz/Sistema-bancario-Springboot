@@ -28,27 +28,27 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
                         // --- REGRAS DE GERENTE (ADMIN) ---
-                        .requestMatchers("/gerentes/**").hasRole("ADMIN")
+                        // 1. CORRIGIDO: Adicionado /api/ e usado singular 'gerente'
+                        .requestMatchers("/api/gerente/**").hasRole("ADMIN")
 
                         // --- REGRAS DE CLIENTE (ADMIN/GERENTE) ---
-                        .requestMatchers("/clientes/**").hasAnyRole("ADMIN", "GERENTE")
+                        // 2. CORRIGIDO: Adicionado /api/ e usado singular 'cliente'
+                        .requestMatchers("/api/cliente/**").hasAnyRole("ADMIN", "GERENTE")
 
                         // --- REGRAS DE CONTA (MAIS ESPECÍFICAS PRIMEIRO) ---
+                        // 3. CORRIGIDO: Adicionado /api/ em todos e reordenado
+
+                        // 2. Ações de gerenciamento (ADMIN/GERENTE) - DEVEM VIR PRIMEIRO
+                        .requestMatchers(HttpMethod.GET, "/api/conta").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.PUT, "/api/conta/{numero}").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.DELETE, "/api/conta/{numero}").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/conta/cpf/{cpf}").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/conta/numero/{numero}").hasAnyRole("ADMIN", "GERENTE")
 
                         // 1. Ações do próprio CLIENTE (sacar, depositar, etc.)
-                        .requestMatchers(HttpMethod.POST, "/contas/{numero}/(sacar|depositar|transferir|rendimento)").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.GET, "/contas/cpf/{cpf}").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.GET, "/contas/numero/{numero}").hasRole("CLIENTE")
-
-                        // 2. Ações de gerenciamento (ADMIN/GERENTE)
-                        // (Listar TUDO, atualizar status, deletar)
-                        .requestMatchers(HttpMethod.GET, "/contas").hasAnyRole("ADMIN", "GERENTE")
-                        .requestMatchers(HttpMethod.PUT, "/contas/{numero}").hasAnyRole("ADMIN", "GERENTE")
-                        .requestMatchers(HttpMethod.DELETE, "/contas/{numero}").hasAnyRole("ADMIN", "GERENTE")
-
-                        // (Se um Admin/Gerente também puder ver contas por CPF/Número)
-                        .requestMatchers(HttpMethod.GET, "/contas/cpf/{cpf}").hasAnyRole("ADMIN", "GERENTE")
-                        .requestMatchers(HttpMethod.GET, "/contas/numero/{numero}").hasAnyRole("ADMIN", "GERENTE")
+                        .requestMatchers(HttpMethod.POST, "/api/conta/{numero}/(sacar|depositar|transferir|rendimento)").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/conta/cpf/{cpf}").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/api/conta/numero/{numero}").hasRole("CLIENTE")
 
                         // Qualquer outra requisição precisa estar autenticada
                         .anyRequest().authenticated()
@@ -58,6 +58,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
