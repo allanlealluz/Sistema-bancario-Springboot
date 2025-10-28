@@ -3,8 +3,6 @@ package com.senai.conta_bancaria.application.dto;
 import com.senai.conta_bancaria.domain.entity.Gerente;
 import jakarta.validation.constraints.*;
 
-import java.util.List;
-
 public record GerenteResponseDto(
         String id,
 
@@ -13,10 +11,7 @@ public record GerenteResponseDto(
         @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
         String nome,
 
-        @NotNull(message = "O CPF não pode ser nulo.")
-        @Positive(message = "O CPF não pode ser negativo.")
-        @Max(value = 99999999999L, message = "O CPF deve ter até 11 digitos.")
-        Long cpf,
+        String cpf,
 
         @Email
         @NotNull(message = "O e-mail não pode ser nulo.")

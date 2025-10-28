@@ -11,7 +11,7 @@ public record GerenteAtualizacaoDto(
         @NotNull(message = "O CPF não pode ser nulo.")
         @Positive(message = "O CPF não pode ser negativo.")
         @Max(value = 99999999999L, message = "O CPF deve ter até 11 digitos.")
-        Long cpf,
+        String cpf,
 
         @Email
         @NotNull(message = "O e-mail não pode ser nulo.")

@@ -27,7 +27,7 @@ public abstract class Usuario {
     private String nome;
 
     @Column(nullable = false, length = 11)
-    private Long cpf;
+    private String cpf;
 
     @Column(nullable = false, length = 120)
     private String email;

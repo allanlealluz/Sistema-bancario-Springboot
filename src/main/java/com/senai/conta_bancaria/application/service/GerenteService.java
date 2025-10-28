@@ -47,13 +47,13 @@ public class GerenteService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ADMIN')")
-    public GerenteResponseDto buscarGerente(Long cpf) {
+    public GerenteResponseDto buscarGerente(String cpf) {
         return GerenteResponseDto.fromEntity(procurarGerenteAtivo(cpf));
     }
 
     // UPDATE
     @PreAuthorize("hasRole('ADMIN')")
-    public GerenteResponseDto atualizarGerente(Long cpf, GerenteAtualizacaoDto dto) {
+    public GerenteResponseDto atualizarGerente(String cpf, GerenteAtualizacaoDto dto) {
         Gerente gerente = procurarGerenteAtivo(cpf);
 
         gerente.setNome(dto.nome());
@@ -66,7 +66,7 @@ public class GerenteService {
 
     // DELETE
     @PreAuthorize("hasRole('ADMIN')")
-    public void apagarGerente(Long cpf) {
+    public void apagarGerente(String cpf) {
         Gerente gerente = procurarGerenteAtivo(cpf);
 
         gerente.setAtivo(false);
@@ -75,7 +75,7 @@ public class GerenteService {
     }
 
     // Mét0do auxiliar para as requisições
-    private Gerente procurarGerenteAtivo(Long cpf) {
+    private Gerente procurarGerenteAtivo(String cpf) {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("gerente"));

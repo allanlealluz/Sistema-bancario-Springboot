@@ -57,13 +57,13 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public ClienteResponseDto buscarCliente(Long cpf) {
+    public ClienteResponseDto buscarCliente(String cpf) {
         return ClienteResponseDto.fromEntity(procurarClienteAtivo(cpf));
     }
 
     // UPDATE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public ClienteResponseDto atualizarCliente(Long cpf, ClienteAtualizacaoDto dto) {
+    public ClienteResponseDto atualizarCliente(String cpf, ClienteAtualizacaoDto dto) {
         Cliente cliente = procurarClienteAtivo(cpf);
 
         cliente.setNome(dto.nome());
@@ -74,7 +74,7 @@ public class ClienteService {
 
     // DELETE
     @PreAuthorize("hasAnyRole('ADMIN','GERENTE')")
-    public void apagarCliente(Long cpf) {
+    public void apagarCliente(String cpf) {
         Cliente cliente = procurarClienteAtivo(cpf);
 
         cliente.setAtivo(false);
@@ -85,7 +85,7 @@ public class ClienteService {
     }
 
     // Mét0do auxiliar para as requisições
-    private Cliente procurarClienteAtivo(Long cpf) {
+    private Cliente procurarClienteAtivo(String cpf) {
         return repository
                 .findByCpfAndAtivoTrue(cpf)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("cliente"));

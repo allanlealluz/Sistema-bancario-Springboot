@@ -36,14 +36,14 @@ public class GerenteController {
     }
 
     @GetMapping("/{cpf}")
-    public ResponseEntity<GerenteResponseDto> buscarGerente(@PathVariable Long cpf) {
+    public ResponseEntity<GerenteResponseDto> buscarGerente(@PathVariable String cpf) {
         return ResponseEntity
                 .ok(service.buscarGerente(cpf));
     }
 
     // Update
     @PutMapping("/{cpf}")
-    public ResponseEntity<GerenteResponseDto> atualizarGerente(@PathVariable Long cpf,
+    public ResponseEntity<GerenteResponseDto> atualizarGerente(@PathVariable String cpf,
                                                                @Valid @RequestBody GerenteAtualizacaoDto dto) {
         return ResponseEntity
                 .ok(service.atualizarGerente(cpf, dto));
@@ -51,7 +51,7 @@ public class GerenteController {
 
     // Delete
     @DeleteMapping("/{cpf}")
-    public ResponseEntity<Void> apagarGerente(@PathVariable Long cpf) {
+    public ResponseEntity<Void> apagarGerente(@PathVariable String cpf) {
         service.apagarGerente(cpf);
         return ResponseEntity
                 .noContent() // status code: 204 (encontrado, sem conteúdo)
