@@ -39,7 +39,7 @@ public class ContaService {
 
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('CLIENTE')")
-    public List<ContaResumoDto> listarContasPorCpf(Long cpf) {
+    public List<ContaResumoDto> listarContasPorCpf(String cpf) {
         return repository
                 .findAllByAtivoTrue()
                 .stream()
