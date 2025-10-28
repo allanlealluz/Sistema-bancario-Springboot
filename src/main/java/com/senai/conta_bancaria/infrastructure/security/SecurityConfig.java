@@ -38,10 +38,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/clientes/**").hasAnyRole("ADMIN", "GERENTE")
                         .requestMatchers(HttpMethod.DELETE, "/clientes/**").hasAnyRole("ADMIN", "GERENTE")
 
-                        .requestMatchers(HttpMethod.GET, "/contas/**").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.POST, "/contas/**").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.PUT, "/contas/**").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.DELETE, "/contas/**").hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.GET, "/contas/**").hasAnyRole("ADMIN", "GERENTE", "CLIENTE")
+                        .requestMatchers(HttpMethod.POST, "/contas/**").hasAnyRole("ADMIN", "GERENTE", "CLIENTE")
+                        .requestMatchers(HttpMethod.PUT, "/contas/**").hasAnyRole("ADMIN", "GERENTE", "CLIENTE")
+                        .requestMatchers(HttpMethod.DELETE, "/contas/**").hasAnyRole("ADMIN", "GERENTE", "CLIENTE")
+// ...
 
                         // Qualquer outra requisição precisa estar autenticada
                         .anyRequest().authenticated()
