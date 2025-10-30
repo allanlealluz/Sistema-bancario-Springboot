@@ -26,9 +26,9 @@ public class ContaService {
 
     // CREATE: embutido em Cliente
 
-    // READ
+    // READ - ADMIN e GERENTE podem listar/buscar
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     public List<ContaResumoDto> listarTodasAsContas() {
         return repository
                 .findAllByAtivoTrue()
@@ -38,7 +38,7 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CLIENTE')")
     public List<ContaResumoDto> listarContasPorCpf(String cpf) {
         return repository
                 .findAllByAtivoTrue()
@@ -49,13 +49,13 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'CLIENTE')")
     public ContaResumoDto buscarConta(Long numero) {
         return ContaResumoDto.fromEntity(procurarContaAtiva(numero));
     }
 
-    // UPDATE
-    @PreAuthorize("hasRole('CLIENTE')")
+    // UPDATE - ADMIN e GERENTE podem atualizar
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     public ContaResumoDto atualizarConta(Long numero, ContaAtualizacaoDto dto) {
         Conta conta = procurarContaAtiva(numero);
 
@@ -72,33 +72,27 @@ public class ContaService {
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
-    // DELETE
-    @PreAuthorize("hasRole('CLIENTE')")
+    // DELETE - ADMIN e GERENTE podem deletar
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
     public void apagarConta(Long numero) {
         Conta conta = procurarContaAtiva(numero);
-
         conta.setAtivo(false);
-
         repository.save(conta);
     }
 
-    // Ações específicas
+    // Ações específicas - Apenas CLIENTE pode executar
 
     @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto sacar(Long numero, ValorSaqueDepositoDto dto) {
         Conta conta = procurarContaAtiva(numero);
-
         conta.sacar(dto.valor());
-
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
     @PreAuthorize("hasRole('CLIENTE')")
     public ContaResumoDto depositar(Long numero, ValorSaqueDepositoDto dto) {
         Conta conta = procurarContaAtiva(numero);
-
         conta.depositar(dto.valor());
-
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
@@ -125,7 +119,7 @@ public class ContaService {
         return ContaResumoDto.fromEntity(repository.save(conta));
     }
 
-    // Mét0do auxiliar para as requisições
+    // Método auxiliar para as requisições
     private Conta procurarContaAtiva(Long numero) {
         return repository
                 .findByNumeroAndAtivoTrue(numero)
