@@ -43,10 +43,23 @@ public abstract class Conta {
 
     public abstract String getTipo();
 
-    public void sacar(BigDecimal valor) {
+    /**
+     * Valida se o saldo é suficiente para a operação.
+     * Esta verificação NÃO altera o saldo.
+     * @param valor Valor a ser validado
+     */
+    public void validarSaldoSuficiente(BigDecimal valor) {
         if (valor.compareTo(getSaldo()) > 0)
-            throw new SaldoInsuficienteException("saque");
+            throw new SaldoInsuficienteException("operação. Saldo disponível: " + getSaldo());
+    }
+
+    /**
+     * Valida e executa o saque.
+     * @param valor Valor a ser sacado
+     */
+    public void sacar(BigDecimal valor) {
         validarValorMaiorQueZero(valor, "saque");
+        validarSaldoSuficiente(valor); // Re-valida para garantir (thread-safety)
 
         saldo = saldo.subtract(valor);
     }
@@ -61,6 +74,7 @@ public abstract class Conta {
         if (id.equals(contaDestino.getId()))
             throw new TransferenciaParaMesmaContaException();
 
+        // A lógica de saque já valida e debita
         sacar(valor);
         contaDestino.depositar(valor);
     }
