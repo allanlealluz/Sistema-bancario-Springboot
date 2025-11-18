@@ -32,4 +32,5 @@ public class Gerente {
 
     @Column(nullable = false)
     private boolean ativo = true;
+
 }
