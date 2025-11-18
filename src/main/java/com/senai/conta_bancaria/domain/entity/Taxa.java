@@ -29,7 +29,6 @@ public class Taxa {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal valorFixo; // Valor adicional
 
-    // Construtor padrão para garantir valores não nulos
     public Taxa(String descricao, BigDecimal percentual, BigDecimal valorFixo) {
         this.descricao = descricao;
         this.percentual = percentual != null ? percentual : BigDecimal.ZERO;
