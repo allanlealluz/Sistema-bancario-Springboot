@@ -4,7 +4,6 @@ import com.senai.conta_bancaria.domain.entity.Gerente;
 import jakarta.validation.constraints.*;
 
 public record GerenteResponseDto(
-        String id,
 
         @NotNull(message = "O nome não pode ser nulo.")
         @NotBlank(message = "O nome não pode ser vazio.")
@@ -25,7 +24,6 @@ public record GerenteResponseDto(
 ) {
     public static GerenteResponseDto fromEntity(Gerente gerente) {
         return new GerenteResponseDto(
-                gerente.getId(),
                 gerente.getNome(),
                 gerente.getCpf(),
                 gerente.getEmail(),
