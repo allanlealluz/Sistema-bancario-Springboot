@@ -26,7 +26,7 @@ public class TaxaController {
     private final PagamentoAppService pagamentoAppService;
 
     @PostMapping
-    @PreAuthorize("hasRole('GERENTE')")
+    @PreAuthorize("hasRole('GERENTE','ADMIN')")
     @Operation(summary = "Cadastra uma nova taxa",
             description = "Permitido apenas para usuários com perfil 'GERENTE'.")
     public ResponseEntity<Taxa> criarTaxa(@RequestBody @Valid TaxaDto dto) {
