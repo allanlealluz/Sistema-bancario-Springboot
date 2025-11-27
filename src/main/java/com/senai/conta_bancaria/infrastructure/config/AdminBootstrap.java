@@ -2,18 +2,21 @@ package com.senai.conta_bancaria.infrastructure.config;
 
 import com.senai.conta_bancaria.domain.entity.Gerente;
 import com.senai.conta_bancaria.domain.enums.Role;
-import com.senai.conta_bancaria.domain.repository.GerenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+
+import com.senai.conta_bancaria.domain.repository.UsuarioRepository;
+
+
 @Component
 @RequiredArgsConstructor
 public class AdminBootstrap implements CommandLineRunner {
 
-    private final GerenteRepository gerenteRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${sistema.admin.email}")
@@ -24,11 +27,11 @@ public class AdminBootstrap implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        gerenteRepository.findByEmail(adminEmail).ifPresentOrElse(
+        usuarioRepository.findByEmail(adminEmail).ifPresentOrElse(
                 gerente -> {
                     if (!gerente.isAtivo()) {
                         gerente.setAtivo(true);
-                        gerenteRepository.save(gerente);
+                        usuarioRepository.save(gerente);
                     }
                 },
                 () -> {
@@ -39,7 +42,7 @@ public class AdminBootstrap implements CommandLineRunner {
                             .senha(passwordEncoder.encode(adminSenha))
                             .role(Role.ADMIN)
                             .build();
-                    gerenteRepository.save(admin);
+                    usuarioRepository.save(admin);
                     System.out.println("⚡ Usuário admin provisório criado: " + adminEmail);
                 }
         );

@@ -1,5 +1,7 @@
 package com.senai.conta_bancaria.domain.entity;
 
+import com.senai.conta_bancaria.domain.entity.Conta;
+import com.senai.conta_bancaria.domain.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
