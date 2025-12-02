@@ -124,8 +124,3 @@ src/main/java/com/conta_bancaria
 ├── infrastructure       # Configurações (Security, Swagger, Beans)
 └── ui_interface         # Camada de Entrada (Controllers REST e Handlers de Erro)
 ```
-## 📝 Autor
-
-Desenvolvido por **André Mendes**
-* [LinkedIn](https://www.linkedin.com/in/andr%C3%A9-mendes-17279b339)
-* [GitHub](https://github.com/andre0gondek)
