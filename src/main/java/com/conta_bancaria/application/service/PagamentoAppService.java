@@ -35,7 +35,7 @@ public class PagamentoAppService {
         return pagamento;
     }
 
-    @PreAuthorize("hasAnyRole('GERENTE')")
+    @PreAuthorize("hasAnyRole('GERENTE','CLIENTE')")
     public PagamentoResponseDTO verPagamento(String boleto){
         var pagamento = buscarPagamentoPorBoleto(boleto);
         return PagamentoResponseDTO.fromEntity(pagamento);
